@@ -1,6 +1,9 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlmodel import Session as SQLSession
+
+from app.auth.dependencies import require_role
+from app.auth.models import User
 from app.db.session import get_session
 from app.db.models import Service
 
@@ -9,7 +12,7 @@ router = APIRouter()
 
 # Create a new service
 @router.post("/", response_model=Service)
-def create_service(service: Service, db: SQLSession = Depends(get_session)):
+def create_service(service: Service, db: SQLSession = Depends(get_session), user: User = Depends(require_role("owner"))):
     db.add(service)
     db.commit()
     db.refresh(service)
@@ -43,7 +46,7 @@ def update_service(business_id: UUID, service_id: UUID, service: Service, db: SQ
 
 # Delete a service by ID
 @router.delete("/{business_id}/{service_id}")
-def delete_service(business_id: UUID, service_id: UUID, db: SQLSession = Depends(get_session)):
+def delete_service(business_id: UUID, service_id: UUID, db: SQLSession = Depends(get_session), user: User = Depends(require_role("owner"))):
     db_service = db.query(Service).filter(Service.business_id == business_id, Service.id == service_id).first()
     if db_service:
         db.delete(db_service)

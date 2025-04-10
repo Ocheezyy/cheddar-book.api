@@ -1,8 +1,11 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlmodel import Session as SQLSession
+
+from app.auth.models import User
 from app.db.session import get_session
 from app.db.models import Booking
+from app.auth.dependencies import get_current_user
 
 router = APIRouter()
 
@@ -18,7 +21,7 @@ def create_booking(booking: Booking, db: SQLSession = Depends(get_session)):
 
 # Get all bookings for a business
 @router.get("/{business_id}", response_model=list[Booking])
-def get_bookings(business_id: UUID, db: SQLSession = Depends(get_session)):
+def get_bookings(business_id: UUID, db: SQLSession = Depends(get_session), user: User = Depends(get_current_user)):
     return db.query(Booking).filter(Booking.business_id == business_id).all()
 
 
@@ -43,7 +46,7 @@ def update_booking(business_id: UUID, booking_id: UUID, booking: Booking, db: SQ
 
 # Delete a booking by ID
 @router.delete("/{business_id}/{booking_id}")
-def delete_booking(business_id: UUID, booking_id: UUID, db: SQLSession = Depends(get_session)):
+def delete_booking(business_id: UUID, booking_id: UUID, db: SQLSession = Depends(get_session), user: User = Depends(get_current_user)):
     db_booking = db.query(Booking).filter(Booking.business_id == business_id, Booking.id == booking_id).first()
     if db_booking:
         db.delete(db_booking)

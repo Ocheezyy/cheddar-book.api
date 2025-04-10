@@ -6,3 +6,6 @@ psycopg2-binary
 python-dotenv~=1.1.0
 SQLAlchemy~=2.0.40
 pytest~=8.3.5
+pydantic~=2.11.3
+python-jose
+passlib[bcrypt]

@@ -1,6 +1,8 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlmodel import Session as SQLSession
+from app.auth.dependencies import require_role
+from app.auth.models import User
 from app.db.session import get_session
 from app.db.models import Business
 
@@ -9,7 +11,11 @@ router = APIRouter()
 
 # Create a new business
 @router.post("/", response_model=Business)
-def create_business(business: Business, db: SQLSession = Depends(get_session)):
+def create_business(
+        business: Business,
+        db: SQLSession = Depends(get_session),
+        user: User = Depends(require_role("owner"))
+):
     db.add(business)
     db.commit()
     db.refresh(business)
@@ -43,7 +49,7 @@ def update_business(business_id: UUID, business: Business, db: SQLSession = Depe
 
 # Delete a business by ID
 @router.delete("/{business_id}")
-def delete_business(business_id: UUID, db: SQLSession = Depends(get_session)):
+def delete_business(business_id: UUID, db: SQLSession = Depends(get_session), user: User = Depends(require_role("owner"))):
     db_business = db.query(Business).filter(Business.id == business_id).first()
     if db_business:
         db.delete(db_business)

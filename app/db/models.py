@@ -15,6 +15,7 @@ class Business(SQLModel, table=True):
     phone: Optional[str] = None
     email: Optional[str] = None
     website: Optional[str] = None
+    owner_id: UUID = Field(foreign_key="users.id")
 
     staff: List["Staff"] = Relationship(back_populates="business")
     services: List["Service"] = Relationship(back_populates="business")
@@ -24,6 +25,7 @@ class Staff(SQLModel, table=True):
     __tablename__ = "staff"
 
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: UUID = Field(foreign_key="users.id")
     business_id: UUID = Field(foreign_key="businesses.id")
     name: str
     role: Optional[str] = None
@@ -48,8 +50,10 @@ class Booking(SQLModel, table=True):
 
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     business_id: UUID = Field(foreign_key="businesses.id")
-    customer_name: str
-    customer_email: str
+    customer_id: UUID = Field(foreign_key="users.id")
+    service_id: UUID = Field(foreign_key="services.id")
+    customer_name: Optional[str]
+    customer_email: Optional[str]
     service: str
     start_time: datetime
     end_time: datetime
