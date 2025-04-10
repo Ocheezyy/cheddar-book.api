@@ -43,7 +43,7 @@ def update_booking(business_id: UUID, booking_id: UUID, booking: Booking, db: SQ
 
 # Delete a booking by ID
 @router.delete("/{business_id}/{booking_id}")
-def delete_booking(business_id: UUID, booking_id: UUID, db: SQLSession = Depends(get_db)):
+def delete_booking(business_id: UUID, booking_id: UUID, db: SQLSession = Depends(get_session)):
     db_booking = db.query(Booking).filter(Booking.business_id == business_id, Booking.id == booking_id).first()
     if db_booking:
         db.delete(db_booking)

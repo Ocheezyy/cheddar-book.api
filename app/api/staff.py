@@ -43,7 +43,7 @@ def update_staff(business_id: UUID, staff_id: UUID, staff: Staff, db: SQLSession
 
 # Delete a staff member by ID
 @router.delete("/{business_id}/{staff_id}")
-def delete_staff(business_id: UUID, staff_id: UUID, db: SQLSession = Depends(get_db)):
+def delete_staff(business_id: UUID, staff_id: UUID, db: SQLSession = Depends(get_session)):
     db_staff = db.query(Staff).filter(Staff.business_id == business_id, Staff.id == staff_id).first()
     if db_staff:
         db.delete(db_staff)
