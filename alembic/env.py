@@ -13,6 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.db.session import engine
 from app.db import models
+from app.auth.models import User
 
 # Alembic Config object
 config = context.config
